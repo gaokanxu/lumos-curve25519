@@ -20,6 +20,9 @@ mod target_arch {
             traits::VartimeMultiscalarMul,
         },
     };
+    
+    //gaokanxu 2024.08.17
+    //use std::array::TryFromSliceError;
 
     pub fn validate_ristretto(point: &PodRistrettoPoint) -> bool {
         point.validate_point()
@@ -63,9 +66,16 @@ mod target_arch {
         type Error = Curve25519Error;
 
         fn try_from(pod: &PodRistrettoPoint) -> Result<Self, Self::Error> {
+            /*
             CompressedRistretto::from_slice(&pod.0)
                 .decompress()
                 .ok_or(Curve25519Error::PodConversion)
+            */
+            //gaokanxu 2024.08.17 begin
+            CompressedRistretto::from_slice(&pod.0)?
+                .decompress()
+                .ok_or(Curve25519Error::DecompressionFailed)
+            //gaokanxu 2024.08.17 end
         }
     }
 
@@ -73,9 +83,17 @@ mod target_arch {
         type Point = Self;
 
         fn validate_point(&self) -> bool {
+            /*
             CompressedRistretto::from_slice(&self.0)
                 .decompress()
                 .is_some()
+            */
+            //gaokanxu 2024.08.17 begin
+            match CompressedRistretto::from_slice(&self.0) {
+                Ok(compressed) => compressed.decompress().is_some(),
+                Err(_) => false, // 如果解包失败，则返回 false
+            }
+        //gaokanxu 2024.08.17 end
         }
     }
 

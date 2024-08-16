@@ -69,11 +69,14 @@ mod target_arch {
                 .decompress()
                 .ok_or(Curve25519Error::PodConversion)
             */
-            //gaokanxu 2024.08.15 begin
-            let compressed = CompressedEdwardsY::from_slice(&pod.0)
-                .map_err(Curve25519Error::SliceError)?; // 手动转换错误
-            let point = compressed.decompress().ok_or(Curve25519Error::PodConversion)?;
-            Ok(point)
+            //gaokanxu 2024.08.15 begin         
+            match CompressedEdwardsY::from_slice(&pod.0) {
+                Ok(compressed) => match compressed.decompress() {
+                    Some(point) => Ok(point),
+                    None => Err(Curve25519Error::DecompressionFailed),
+                },
+                Err(e) => Err(Curve25519Error::SliceError(e)),
+            }
             //gaokanxu 2024.08.15 end
         }
     }
@@ -82,9 +85,17 @@ mod target_arch {
         type Point = Self;
 
         fn validate_point(&self) -> bool {
+            /*
             CompressedEdwardsY::from_slice(&self.0)
                 .decompress()
                 .is_some()
+            */
+            //gaokanxu 2024.08.17 begin
+            CompressedEdwardsY::from_slice(&self.0)
+                .expect("Failed to parse CompressedEdwardsY from slice")
+                .decompress()
+                .is_some()
+            //gaokanxu 2024.08.17 end
         }
     }
 
