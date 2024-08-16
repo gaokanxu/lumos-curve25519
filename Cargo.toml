@@ -2,20 +2,16 @@
 name = "lumos-curve25519"
 description = "Lumos Curve25519 Syscalls"
 
-version = { workspace = true }
-authors = { workspace = true }
-repository = { workspace = true }
-homepage = { workspace = true }
-license = { workspace = true }
-edition = { workspace = true }
+version = "0.0.1"
+authors = ["Gao Kanxu <gaokanxu@gmail.com>"]
+repository = "https://github.com/gaokanxu/lumos-curve25519"
+license = "Apache-2.0"
+edition = "2021"
 
 [dependencies]
-bytemuck = { workspace = true }
-bytemuck-derive = { workspace = true }
-thiserror = { workspace = true }
+bytemuck = { git = "https://github.com/gaokanxu/bytemuck.git", branch = "main", package = "bytemuck", features = ["derive"] }
+bytemuck-derive = { git = "https://github.com/gaokanxu/bytemuck.git", branch = "main", package = "bytemuck_derive" }
+thiserror = "1.0.63"
 
-[target.'cfg(target_os = "lumos")'.dependencies]
-lumos-program = { workspace = true }
+curve25519-dalek = { path="../curve25519-dalek/curve25519-dalek", features = ["serde"] }
 
-[target.'cfg(not(target_os = "lumos"))'.dependencies]
-curve25519-dalek = { workspace = true, features = ["serde"] }
