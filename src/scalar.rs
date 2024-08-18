@@ -1,3 +1,7 @@
+//gaokanxu 2024.08.17
+use curve25519_dalek::Scalar;
+
+
 pub use bytemuck_derive::{Pod, Zeroable};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Pod, Zeroable)]
@@ -52,3 +56,16 @@ mod target_arch {
         }
     }
 }
+
+
+//gaokanxu 2024.08.17 定义新类型 MyPodScalar
+pub struct MyPodScalar(pub PodScalar);
+
+// 为 MyPodScalar 实现 From<Scalar>
+impl From<Scalar> for MyPodScalar {
+    fn from(scalar: Scalar) -> MyPodScalar {
+        MyPodScalar(PodScalar(scalar.to_bytes()))
+    }
+}
+//gaokanxu 2024.08.17 end
+
